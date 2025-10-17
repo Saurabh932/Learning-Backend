@@ -1,0 +1,33 @@
+1. HTTP (HyperText Transfer Protocol)
+- Learn what HTTP actually does in backend communication.
+-HTTP = rules for how clients (like browsers) and servers (like FastAPI) communicate.
+-You send requests → server sends responses.
+
+### Common HTTP Methods:
+
+| Method | Meaning     | Example               |
+| ------ | ----------- | --------------------- |
+| GET    | Read data   | Fetch a list of users |
+| POST   | Create data | Add a new user        |
+| PUT    | Update data | Update user info      |
+| DELETE | Delete data | Remove a user         |
+
+
+2. CRUD (Create, Read, Update, Delete)
+- These are the basic operations your backend performs with data.
+- You can practice them using FastAPI routes:
+
+    @app.post("/user")      # Create
+    @app.get("/user/{id}")  # Read
+    @app.put("/user/{id}")  # Update
+    @app.delete("/user/{id}") # Delete
+
+
+3. What is API?
+Application Programming Interface are mechanism that enables two software components such as forntend
+and backend of an application to communicate with each other using a defined set of rules, protocol
+and data formate.
+
+
+4. What is FastAPI?
+It is a mordern, high-performance web framework for building APIs with Python
