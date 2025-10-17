@@ -24,10 +24,39 @@
 
 
 3. What is API?
-Application Programming Interface are mechanism that enables two software components such as forntend
-and backend of an application to communicate with each other using a defined set of rules, protocol
-and data formate.
+Application Programming Interface are mechanism that enables two software components such as forntend and backend of an application to communicate with each other using a defined set of rules, protocol and data formate.
 
 
 4. What is FastAPI?
 It is a mordern, high-performance web framework for building APIs with Python
+
+
+5. Path() function?
+It is used to provide meta data, validation rules, and documentation hints for path parameters in your API endpoints.
+
+6. HTTP status code?
+These are 3 digit number code returned by a web server like FastAPI to indicate the result of a client's request like form browsers.
+
+| Code               | Name                   | Meaning                                  | Example Use |
+| ------------------ | ---------------------- | ---------------------------------------- | ----------- |
+| **200 OK**         | Request successful     | GET `/users/1` → returns user data       |             |
+| **201 Created**    | Resource created       | POST `/users` → new user created         |             |
+| **204 No Content** | Successful but no body | DELETE `/users/1` → just success message |             |
+| -------------------- | ---------------------------------- | ---------------------------------- | ----------- |
+| **400 Bad Request**  | Invalid input from client          | Sending malformed JSON             |             |
+| **401 Unauthorized** | Authentication required            | Accessing `/profile` without token |             |
+| **403 Forbidden**    | User authenticated but not allowed | Normal user accessing admin route  |             |
+| **404 Not Found**    | Resource doesn’t exist             | GET `/users/999`                   |             |
+| ----------------------------- | ------------------------------------- | ------------------------------------- | ----------- |
+| **500 Internal Server Error** | General backend error                 | Code crash or unhandled exception     |             |
+| **502 Bad Gateway**           | Invalid response from upstream server | Reverse proxy or microservice failure |             |
+| **503 Service Unavailable**   | Server down or overloaded             | Maintenance mode or overload          |             |
+
+
+7. HTTPException?
+it is a built-in exception in FastAPI used to return custom HTTP error response when something goes wrong in API
+
+8. Query parameters ?
+These are optional key-value pair appended to the end of url, used to pass addition data to the server in HTTP request. The "?" marks the start of the Query parameters and multiple paramenters are seperated by "&"
+
+eg. /patient?city=Delhi&sort_by=age
