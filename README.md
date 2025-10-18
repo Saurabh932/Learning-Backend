@@ -10,3 +10,6 @@
 
 ## Day 3 - Pydantic
 - Completed main topic of Pydantic
+
+## Day 4 - Post
+- Completed with Post Method
