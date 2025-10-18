@@ -7,3 +7,6 @@
 ## Day 2 - Paramters
 - Completed Path and Query Parameter
 - Practice Paramters
+
+## Day 3 - Pydantic
+- Completed main topic of Pydantic
