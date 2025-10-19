@@ -13,3 +13,6 @@
 
 ## Day 4 - Post
 - Completed with Post Method
+
+## Day 5 - Put and Delete
+- Completed Put and delete
