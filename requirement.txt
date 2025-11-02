@@ -1,4 +1,7 @@
-FastAPI
+fastapi
 uvicorn
 pydantic
 pydantic[email]
+pydantic_settings
+sqlmodel
+sqlalchemy
