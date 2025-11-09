@@ -20,3 +20,8 @@
 
 <!-- $env:PYTHONPATH = "." -->
 
+## Day 6 - Started Database
+
+## Day 7 - completeded Database
+
+## Day 8 - Started User authentication
