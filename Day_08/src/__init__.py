@@ -4,6 +4,7 @@ Runs DB initialization on startup (init_db) via the lifespan context manager.
 """
 
 from fastapi import FastAPI
+from src.auth.routes import auth_router
 from src.books.routes import router
 from contextlib import asynccontextmanager
 from src.db.main import init_db
@@ -34,3 +35,4 @@ app = FastAPI(
 
 # Attach books router under /api/v1/book
 app.include_router(router, prefix=f"/api/{version}/book", tags=["book"])
+app.include_router(auth_router, prefix=f"/api/{version}/auth", tags=["auth"])

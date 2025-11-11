@@ -11,3 +11,6 @@ sqlmodel
 sqlalchemy
 fastapi[standard]
 alembic
+passlib
+bcrypt
+passlib[argon2]
