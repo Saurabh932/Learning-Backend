@@ -10,7 +10,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     # The database connection URL (e.g. postgresql+asyncpg://user:pass@host/db)
     DATABASE_URL: str
-
+    JWT_SECRET : str
+    JWT_ALGORITHM : str
+    
     # Configuration for where to read the environment file from
     model_config = SettingsConfigDict(
         env_file="src/.env",  # Path to .env file

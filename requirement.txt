@@ -14,3 +14,4 @@ alembic
 passlib
 bcrypt
 passlib[argon2]
+pyjwt

@@ -9,7 +9,7 @@ class UserService:
         statement = select(User).where(User.email == email)
         
         result = await session.execute(statement)
-        user = result.first()
+        user = result.scalar_one_or_none()
         return user
     
     async def user_exists(self, email, session:AsyncSession):
