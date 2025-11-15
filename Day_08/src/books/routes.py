@@ -12,23 +12,30 @@ from src.books.schema import Book, BookUpdate, BookCreateModel
 
 from src.books.service import BookService
 from src.db.main import get_session
+from src.auth.dependencies import AccessTokenBearer
+
 
 router = APIRouter()
 book_service = BookService()
+access_token_bearier = AccessTokenBearer()
 
 
 @router.get("/", response_model=List[Book])
-async def get_all_books(session: AsyncSession = Depends(get_session)):
+async def get_all_books(session: AsyncSession = Depends(get_session),
+                        user_details = Depends(access_token_bearier)):
     """
     GET /api/v1/book/
     Return list of books
     """
+    print(user_details)
     books = await book_service.get_all_books(session)
     return books
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=Book)
-async def create_book(book_data: BookCreateModel, session: AsyncSession = Depends(get_session)) -> dict:
+async def create_book(book_data: BookCreateModel, 
+                      session: AsyncSession = Depends(get_session),
+                      user_details = Depends(access_token_bearier)) -> dict:
     """
     POST /api/v1/book/
     Create and return the created book
@@ -38,7 +45,9 @@ async def create_book(book_data: BookCreateModel, session: AsyncSession = Depend
 
 
 @router.get("/{book_uid}", response_model=Book)
-async def get_book(book_uid: str, session: AsyncSession = Depends(get_session)):
+async def get_book(book_uid: str, 
+                   session: AsyncSession = Depends(get_session),
+                   user_details = Depends(access_token_bearier)):
     """
     GET /api/v1/book/{book_uid}
     Return single book or 404
@@ -51,7 +60,10 @@ async def get_book(book_uid: str, session: AsyncSession = Depends(get_session)):
 
 
 @router.patch("/{book_uid}", response_model=Book)
-async def update_book(book_uid: str, book_update_data: BookUpdate, session: AsyncSession = Depends(get_session)):
+async def update_book(book_uid: str, 
+                      book_update_data: BookUpdate, 
+                      session: AsyncSession = Depends(get_session),
+                      user_details = Depends(access_token_bearier)):
     """
     PATCH /api/v1/book/{book_uid}
     Partial update — only fields provided in the body are updated
@@ -64,7 +76,9 @@ async def update_book(book_uid: str, book_update_data: BookUpdate, session: Asyn
 
 
 @router.delete("/{book_uid}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_book(book_uid: str, session: AsyncSession = Depends(get_session)):
+async def delete_book(book_uid: str, 
+                      session: AsyncSession = Depends(get_session),
+                      user_details = Depends(access_token_bearier)):
     """
     DELETE /api/v1/book/{book_uid}
     Delete the book. Return 204 if success, otherwise 404.

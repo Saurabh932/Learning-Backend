@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from fastapi import APIRouter, Depends, status
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
@@ -7,6 +7,8 @@ from .service import UserService
 from .utils import create_access_token, decode_token, verify_passwd
 from src.db.main import get_session
 from sqlalchemy.ext.asyncio.session import AsyncSession
+from .dependencies import RefreshTokenBearer, AccessTokenBearer
+# from src.db.redis import add_jti_to_blocklist
 
 auth_router = APIRouter()
 user_service = UserService()
@@ -72,3 +74,28 @@ async def login_users(login_data : UserLoginModel,
         status_code=status.HTTP_403_FORBIDDEN,
         detail="Imvalid Email or Password"
     )
+    
+    
+
+@auth_router.get('/refresh_token')
+async def get_new_access_token(token_details : dict = Depends(RefreshTokenBearer())):
+    expiry_timestamp = token_details['exp']
+    
+    if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
+        new_access_token = create_access_token(user_data=token_details['user'])
+        return JSONResponse(content={"access_token":new_access_token})
+    
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Invalid or expired token")
+    
+    
+# @auth_router.get("/logout")
+# async def revoke_token(token_details : dict = Depends(AccessTokenBearer())):
+#     jti = token_details['jti']
+    
+#     await add_jti_to_blocklist(jti)
+    
+#     return JSONResponse(
+#         content={"message":"Logged out successfully"},
+#         status_code=status.HTTP_200_OK
+#     )
