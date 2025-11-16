@@ -79,7 +79,7 @@ async def get_current_user(token_details: dict=Depends(AccessTokenBearer()),
 
 
 class RoleChecker:
-    def __inti__(self, allowed_roles:List[str]) -> None:
+    def __init__(self, allowed_roles:List[str]) -> None:
         self.allowed_roles = allowed_roles
         
     def __call__(self, current_user : User = Depends(get_current_user)) -> Any:
