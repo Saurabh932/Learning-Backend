@@ -18,6 +18,12 @@ class BookService:
         statement = select(Book).order_by(desc(Book.created_at))
         result = await session.exec(statement)
         return result.all()
+    
+    async def get_user_books(self, user_uid : str, session : AsyncSession):
+        statement = select(Book).where(Book.user_uid == user_uid).order_by(desc(Book.created_at))
+        result = await session.exec(statement)
+        return result.all()
+    
 
     async def get_book(self, book_uid: str, session: AsyncSession):
         """
@@ -28,7 +34,7 @@ class BookService:
         book = result.first()
         return book if book is not None else None
 
-    async def create_book(self, book_data: BookCreateModel, session: AsyncSession):
+    async def create_book (self, book_data: BookCreateModel, user_uid : str, session: AsyncSession):
         """
         Create a Book from BookCreateModel, convert published_date string to datetime,
         save and return the created Book (with uid, timestamps).
@@ -39,6 +45,8 @@ class BookService:
         # Convert published_date string ("YYYY-MM-DD") to datetime (optional)
         new_book.published_date = datetime.strptime(book_data_dict['published_date'], "%Y-%m-%d")
 
+        new_book.user_uid = user_uid
+        
         session.add(new_book)
         await session.commit()
         # refresh so DB-generated fields (uid, created_at) are loaded into new_book
