@@ -7,6 +7,7 @@ from .utils import decode_token
 # from src.db.redis import token_in_blocklist
 from src.db.main import get_session
 from src.db.model import User
+from src.exception import InvalidToken
 from sqlalchemy.ext.asyncio import AsyncSession
 from .service import UserService
 
@@ -25,9 +26,10 @@ class TokenBearer(HTTPBearer):
         token_data = decode_token(token)
         
         if not self.token_valid(token):
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                                detail={"error":"This token is invalid or expired",
-                                        "resolution":"Please get new token"})
+            raise InvalidToken
+            # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+            #                     detail={"error":"This token is invalid or expired",
+            #                             "resolution":"Please get new token"})
         
         
         # if await token_in_blocklist(token_data['jti']):

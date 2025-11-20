@@ -1,0 +1,384 @@
+SECTION 1 — Fundamentals (Beginner Level)
+
+These are the basics we covered before touching real backend:
+
+1. What is a Server?
+
+How servers receive requests and send responses
+
+What backend means
+
+2. What is an API?
+
+API meaning
+
+Why APIs exist
+
+How frontend ↔ backend communicate
+
+3. What is REST API?
+
+REST architecture
+
+REST constraints
+
+Statelessness
+
+REST vs SOAP vs GraphQL (basics)
+
+4. HTTP & Web Basics
+
+What is HTTP
+
+HTTP methods (GET, POST, PUT, PATCH, DELETE)
+
+HTTP status codes (200, 201, 400, 401, 403, 404, 409, 500)
+
+Headers, body, params, query, path
+
+5. JSON Basics
+
+JSON structure
+
+Serialization & deserialization
+
+✅ SECTION 2 — FastAPI Basics
+6. Installing & Setting Up FastAPI
+7. Creating Your First FastAPI App
+8. Path operations
+
+GET, POST, PUT, PATCH, DELETE
+
+9. Swagger UI & ReDoc
+10. Request & Response Models
+
+Pydantic BaseModel
+
+Validation
+
+Field constraints
+
+✅ SECTION 3 — SQLModel + Database Fundamentals
+11. What is SQLModel?
+
+Combines SQLAlchemy + Pydantic
+
+12. Database Models
+
+Defining tables
+
+Fields
+
+UUID primary keys
+
+Default values
+
+Timestamps
+
+13. PostgreSQL Basics
+
+Installing & connecting
+
+Databases vs tables
+
+Primary key, foreign key
+
+14. Async Database
+
+What is async DB
+
+Why async is important
+
+15. Session (AsyncSession)
+
+Dependency injection
+
+Creating, committing, flushing
+
+✅ SECTION 4 — Alembic (Database Migrations)
+16. What is Alembic?
+
+Schema versioning
+
+Why migrations matter
+
+17. autogenerate migrations
+18. upgrading/downgrading database
+19. env.py configuration setup
+✅ SECTION 5 — Authentication Fundamentals
+20. What is Authentication?
+21. Types of Authentication
+
+Session-based
+
+Token-based
+
+OAuth
+
+JWT
+
+Basic Auth
+
+API keys
+
+22. What is Authorization?
+
+AuthN vs AuthZ
+
+23. Password Hashing Basics
+
+Why hashing is needed
+
+Salt, hashing, bcrypt, argon2
+
+24. Using Passlib
+
+Hashing
+
+Verifying
+
+✅ SECTION 6 — JWT (JSON Web Tokens)
+25. What is JWT?
+
+Header, payload, signature
+
+HS256 algorithm
+
+26. Access Token vs Refresh Token
+
+Lifetime
+
+Why two tokens are used
+
+Security considerations
+
+27. Creating JWT in FastAPI
+28. Decoding JWT
+29. Token expiry
+30. Refresh token rotation
+✅ SECTION 7 — Authentication Dependencies
+31. Using HTTPBearer in FastAPI
+32. Custom Token Classes
+
+TokenBearer
+
+AccessTokenBearer
+
+RefreshTokenBearer
+
+33. Protecting Routes
+
+Depends(access_token_bearer)
+
+✅ SECTION 8 — Logout + Token Blocklist
+
+(Even though you removed Redis, you learned the concept)
+
+34. What is Token Blocklisting?
+35. Logout using JTI (JWT ID)
+36. Using Redis for blocklist (conceptual)
+
+
+✅ SECTION 9 — Advanced Database & Relationships
+
+(Matches: Playlist Part 15)
+
+Deep Relationships
+
+One-to-one
+
+One-to-many
+
+Many-to-many
+
+Parent → Child relationships
+
+Cascade behaviour
+
+Lazy loading vs Eager loading
+
+Nested schema responses
+
+model_dump with relationships
+
+Relationship Integrations in SQLModel
+
+back_populates
+
+foreign_key
+
+sa_relationship_kwargs
+
+Using scalar / scalars / first() correctly
+
+Handling empty relationships
+
+Joining Data Across Tables
+
+How service layer fetches related tables
+
+Nested responses (user → books → reviews)
+
+Error handling when relation not found
+
+Serializing Relationship Data
+
+Pydantic models with nested objects
+
+Preventing circular imports
+
+Excluding fields in child models
+
+✅ SECTION 10 — Custom Error Handling
+
+(Matches: Playlist Part 16)
+
+What are exceptions in FastAPI
+
+Raising custom exceptions
+
+Creating global exception handlers
+
+HTTPException with custom messages
+
+Validation errors and error wrapping
+
+Adding logging to exceptions
+
+Structured error response format (JSON only)
+
+404 pages, 401/403 responses, conflict errors
+
+✅ SECTION 11 — Middleware, Logging & CORS
+
+(Matches: Playlist Part 17)
+
+What is Middleware?
+
+How middleware processes requests & responses
+
+Logging middleware
+
+Request/response time logger
+
+Adding user-agent logs
+
+Using CORS
+
+CORS allow origins, methods, headers
+
+Why CORS is important for frontend communication
+
+✅ SECTION 12 — Email Service + Verification Flow
+
+(Matches: Playlist Part 18)
+
+What is Email Verification
+
+SMTP / External email provider
+
+Creating verification tokens
+
+Email link structure
+
+Saving verification state in DB
+
+Expiry of verification tokens
+
+Verifying user account via callback
+
+Security considerations for email verification
+
+✅ SECTION 13 — Password Reset System
+
+(Matches: Playlist Part 19)
+
+Password reset tokens
+
+Password reset workflows
+
+Request reset
+
+Send email with token
+
+Verify token
+
+Update password
+
+Re-hashing new passwords
+
+Expiring old tokens
+
+Security concerns with reset flow
+
+✅ SECTION 14 — Background Tasks
+
+(Matches: Playlist Part 20)
+
+What are background tasks?
+
+FastAPI BackgroundTasks
+
+Use cases
+
+Sending email
+
+Logging
+
+Notifications
+
+Using Celery + Redis
+
+Worker architecture
+
+Task queues
+
+Retry logic
+
+✅ SECTION 15 — Documentation
+
+(Matches: Playlist Part 21)
+
+Swagger UI configuration
+
+ReDoc documentation
+
+Using Tags for endpoints
+
+Description, summary, examples
+
+Auto-generated schema docs
+
+✅ SECTION 16 — API Testing
+
+(Matches: Playlist Part 22)
+
+Unit testing
+
+Integration testing with FastAPI TestClient
+
+PyTest fixtures
+
+Mocking DB/session
+
+Schemathesis for API schema testing
+
+Testing authenticated routes
+
+✅ SECTION 17 — Deployment
+
+(Matches: Playlist Part 23)
+
+Deploying FastAPI on Render
+
+Production database setup
+
+Environment variables
+
+Gunicorn/Uvicorn workers
+
+HTTPS certificates
+
+Scaling background workers
+
+Containerizing backend (if used)
