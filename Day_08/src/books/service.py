@@ -6,7 +6,7 @@ This keeps DB logic separated from route handlers (clean architecture).
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, desc
 from datetime import datetime
-from .models import Book
+from src.db.model import Book
 from .schema import BookCreateModel, BookUpdate  # import your pydantic/sqlmodel schemas
 
 

@@ -8,7 +8,7 @@ from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 # Import the request/response schemas (Pydantic/SQLModel models)
-from src.books.schema import Book, BookUpdate, BookCreateModel
+from .schema import Book, BookUpdate, BookCreateModel, BookDetailModel
 
 from src.books.service import BookService
 from src.db.main import get_session
@@ -61,7 +61,7 @@ async def create_book(book_data: BookCreateModel,
     return new_book
 
 
-@router.get("/{book_uid}", response_model=Book,  dependencies=[role_checker])
+@router.get("/{book_uid}", response_model=BookDetailModel,  dependencies=[role_checker])
 async def get_book(book_uid: str, 
                    session: AsyncSession = Depends(get_session),
                    token_details : dict = Depends(access_token_bearier)):
