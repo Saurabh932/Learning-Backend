@@ -16,7 +16,7 @@ from src.config import config  # or wherever your DATABASE_URL lives
 #   - psycopg async: postgresql+psycopg_async://user:pass@host/db
 async_engine = create_async_engine(
     config.DATABASE_URL,  # async DB URL from .env
-    echo=True,            # Logs SQL queries (useful while developing)
+    echo=False,            # Logs SQL queries (useful while developing)
 )
 
 # This function will be called at app startup to create tables if they don't exist.

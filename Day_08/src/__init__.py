@@ -9,7 +9,8 @@ from src.books.routes import router
 from src.reviews.routes import review_router
 from contextlib import asynccontextmanager
 from src.db.main import init_db
-from .exception import 
+# from .exception import 
+from middleware import register_middleware
 
 # Lifespan context manager — run startup/shutdown tasks here
 @asynccontextmanager
@@ -34,6 +35,8 @@ app = FastAPI(
     version=version,
     lifespan=life_span
 )
+
+register_middleware(app)
 
 # Attach books router under /api/v1/book
 app.include_router(router, prefix=f"/api/{version}/book", tags=["book"])

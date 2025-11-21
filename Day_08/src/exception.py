@@ -2,6 +2,7 @@ from typing import Any
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 
+
 class BooklyException(Exception):
     """
         This is the base class for all bookly error
