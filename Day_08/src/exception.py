@@ -1,4 +1,6 @@
-
+from typing import Any
+from fastapi.requests import Request
+from fastapi.responses import JSONResponse
 
 class BooklyException(Exception):
     """
@@ -89,3 +91,12 @@ class AccountNotVerified(Exception):
         Account not yet verified
     """
     pass
+
+
+
+def create_exception_handler(statuts_code: int, initial_detail: Any) -> callable[[Request, Exception], JSONResponse]:
+    
+    async def excpetion_handler(request: Request, exc: BooklyException):
+        return JSONResponse(content=initial_detail, status_code=statuts_code)
+    
+    return excpetion_handler

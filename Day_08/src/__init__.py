@@ -9,6 +9,7 @@ from src.books.routes import router
 from src.reviews.routes import review_router
 from contextlib import asynccontextmanager
 from src.db.main import init_db
+from .exception import 
 
 # Lifespan context manager — run startup/shutdown tasks here
 @asynccontextmanager

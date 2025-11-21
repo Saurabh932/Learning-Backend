@@ -8,6 +8,7 @@ from .utils import decode_token
 from src.db.main import get_session
 from src.db.model import User
 from src.exception import InvalidToken
+from src.exception import InvalidToken, RefreshTokenRequired, AccessTokenRequired, InsufficientPermission
 from sqlalchemy.ext.asyncio import AsyncSession
 from .service import UserService
 
@@ -33,6 +34,7 @@ class TokenBearer(HTTPBearer):
         
         
         # if await token_in_blocklist(token_data['jti']):
+            # raise InvalidToken()
         #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
         #                         detail={"error":"This token is invalid or has been revoked",
         #                                 "resolution":"Please get new token"})
@@ -60,15 +62,17 @@ class TokenBearer(HTTPBearer):
 class AccessTokenBearer(TokenBearer):
     def verify_token_data(self, token_data:dict) -> None:
         if token_data and token_data['refresh']:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                                detail="Please provide access token")
+            raise AccessTokenRequired()
+            # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+            #                     detail="Please provide access token")
 
 
 class RefreshTokenBearer(TokenBearer):
     def verify_token_data(self, token_data:dict) -> None:
         if token_data and not token_data['refresh']:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                                detail="Please provide refresh token")
+            raise RefreshTokenRequired
+            # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+            #                     detail="Please provide refresh token")
             
             
 async def get_current_user(token_details: dict=Depends(AccessTokenBearer()),
@@ -87,5 +91,7 @@ class RoleChecker:
     def __call__(self, current_user : User = Depends(get_current_user)) -> Any:
         if current_user.role in self.allowed_roles:
             return True
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="You are not permitted to perform this access")
+        
+        raise InsufficientPermission()
+        # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+        #                     detail="You are not permitted to perform this access")
