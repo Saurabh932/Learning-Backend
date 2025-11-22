@@ -2,9 +2,10 @@ from datetime import timedelta, datetime
 from fastapi import APIRouter, Depends, status
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
-from .schemas import UserCreation, UserModel, UserLoginModel, UserBooksModel
+from .schemas import UserCreation, UserModel, UserLoginModel, UserBooksModel, EmailModel
 from .service import UserService
 from .utils import create_access_token, decode_token, verify_passwd
+from src.mail import create_message, mail
 from src.db.main import get_session
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from .dependencies import RefreshTokenBearer, AccessTokenBearer, get_current_user, RoleChecker
@@ -16,6 +17,18 @@ user_service = UserService()
 role_checker = RoleChecker(['admin', 'user'])
 
 REFRESH_TOKEN_EXPIRY = 2
+
+
+@auth_router.post("/send_mail")
+async def send_mail(emails: EmailModel):
+    emails = emails.addresses
+    html = "<h1>Welcome to the App</h1>"
+    
+    message = create_message(recipients=emails, subject="Welcome", body=html)
+    
+    await mail.send_message(message)
+    return {"message":"Email sent successfully"}
+    
 
 @auth_router.post("/signup", response_model=UserModel, status_code=status.HTTP_201_CREATED)
 async def create_user_account(user_data : UserCreation,

@@ -10,7 +10,7 @@ from src.reviews.routes import review_router
 from contextlib import asynccontextmanager
 from src.db.main import init_db
 # from .exception import 
-from middleware import register_middleware
+from .middleware import register_middleware
 
 # Lifespan context manager — run startup/shutdown tasks here
 @asynccontextmanager
