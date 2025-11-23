@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     USE_CREDENTIALS : bool = True
     VALIDATE_CERTS : bool = True
     
+    DOMAIN : str
+    
     
     # Configuration for where to read the environment file from
     model_config = SettingsConfigDict(

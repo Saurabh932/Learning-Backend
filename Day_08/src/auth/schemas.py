@@ -5,12 +5,23 @@ from pydantic import BaseModel, Field
 from src.books.schema import Book
 
 class UserCreation(BaseModel):
-    first_name : str = Field(max_length=20)
+    first_name : str = Field(max_length=20) 
     last_name : str = Field(max_length=20)
     username : str = Field(max_length=8)
     email : str = Field(max_length=40)
     password : str = Field(...)
     
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "first_name": "John",
+                "last_name": "Doe",
+                "username": "johndoe",
+                "email": "johndoe123@co.com",
+                "password": "testpass123",
+            }
+        }
+    }
 
 class UserModel(BaseModel):
     uid: uuid.UUID

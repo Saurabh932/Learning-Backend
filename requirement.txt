@@ -16,3 +16,5 @@ bcrypt
 passlib[argon2]
 pyjwt
 redis
+fastapi-mail
+itsdangerous
