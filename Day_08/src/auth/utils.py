@@ -1,7 +1,7 @@
 import jwt
 import uuid
 import logging
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import BadSignature, URLSafeTimedSerializer
 from passlib.context import CryptContext
 from datetime import timedelta, datetime
 from src.config import config
@@ -66,19 +66,33 @@ def decode_token(token : str) -> dict:
     
     
 
-serializer = URLSafeTimedSerializer(secret_key=config.JWT_SECRET,
-                                        salt = "email-configuration")
+serializer = URLSafeTimedSerializer(secret_key=config.JWT_SECRET, salt="email-password-reset")
+
+
 
 def create_url_safe_token(data: dict):
-    
-    token = serializer.dumps(data,salt="email-configuration")
-    return token
-
-
-def decode_url_safe_token(token:str):
+    """
+    Create a URL-safe token for email/password reset
+    """
     try:
-        token_data = serializer.loads(token)
-        return token_data
-        
+        return serializer.dumps(data)
     except Exception as e:
-        logging.error(e)
+        logging.error(f"Token creation failed: {e}")
+        
+
+def decode_url_safe_token(token:str, max_age: int = 3600):
+    """
+    Validate & decode token safely
+    """
+    try:
+        token_data = serializer.loads(token, max_age=3600)  # 1 hour expiry
+        return token_data
+
+    except BadSignature:
+        logging.error("Invalid token signature")
+        return None
+
+    except Exception as e:
+        logging.error(str(e))
+        return None
+

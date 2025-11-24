@@ -11,17 +11,6 @@ class UserCreation(BaseModel):
     email : str = Field(max_length=40)
     password : str = Field(...)
     
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "first_name": "John",
-                "last_name": "Doe",
-                "username": "johndoe",
-                "email": "johndoe123@co.com",
-                "password": "testpass123",
-            }
-        }
-    }
 
 class UserModel(BaseModel):
     uid: uuid.UUID
@@ -46,3 +35,12 @@ class UserLoginModel(BaseModel):
     
 class EmailModel(BaseModel):
     addresses : List[str]
+    
+
+class PasswordRequestModel(BaseModel):
+    email : str
+     
+     
+class PasswordResetConfirmModel(BaseModel):
+    new_password : str
+    confirm_new_password : str

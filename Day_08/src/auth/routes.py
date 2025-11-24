@@ -1,27 +1,27 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, BackgroundTasks
 from fastapi.exceptions import HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
 # Configuration and Database
 from src.config import config
 from src.db.main import get_session
-# from src.db.redis import add_jti_to_blocklist # Uncommented if Redis is used
+from src.db.redis import add_jti_to_blocklist # Uncommented if Redis is used
 
 # Email/Messaging
 from src.mail import create_message, mail
 
 # Schemas and Exceptions
 from src.exception import UserAlreadyExists, UserNotFound, InvalidCredentials, InvalidToken
-from .schemas import UserCreation, UserModel, UserLoginModel, UserBooksModel, EmailModel
+from .schemas import UserCreation, UserModel, UserLoginModel, UserBooksModel, EmailModel, PasswordRequestModel,PasswordResetConfirmModel
 
 # Core Logic
 from .service import UserService
-from .utils import create_access_token, decode_token, verify_passwd, create_url_safe_token, decode_url_safe_token
+from .utils import create_access_token, decode_token, verify_passwd, create_url_safe_token, decode_url_safe_token, generate_passwd_hash
 from .dependencies import RefreshTokenBearer, AccessTokenBearer, get_current_user, RoleChecker
 
 auth_router = APIRouter()
@@ -43,7 +43,7 @@ async def send_mail(emails: EmailModel):
     
 
 @auth_router.post("/signup", status_code=status.HTTP_201_CREATED)
-async def create_user_account(user_data : UserCreation,
+async def create_user_account(user_data : UserCreation, bg_tasks: BackgroundTasks,
                               session : AsyncSession  = Depends(get_session)):
     email = user_data.email
     
@@ -55,9 +55,9 @@ async def create_user_account(user_data : UserCreation,
     
     new_user = await user_service.create_user(user_data, session)
     
-    token = create_url_safe_token({"email:": email})
+    token = create_url_safe_token({"email": email})
     
-    link = f"http://{config.DOMAIN}/api/v1/auth/verfiy/{token}"
+    link = f"http://{config.DOMAIN}/api/v1/auth/verify/{token}"
     
     html_message = f"""
                     <h1>Verify your Email</h1>
@@ -66,7 +66,7 @@ async def create_user_account(user_data : UserCreation,
                     
     message = create_message(recipients=[email], subject="Verfiy you email", body=html_message)
     
-    await mail.send_message(message)
+    bg_tasks.add_task(mail.send_message, message)
     
     return {"message":"Account created! Check email to verify your account",
             "user":new_user}
@@ -135,7 +135,7 @@ async def login_users(login_data : UserLoginModel,
                 }
             )
             
-    raise InvalidCredentials
+    raise InvalidCredentials()
     # raise HTTPException(
     #     status_code=status.HTTP_403_FORBIDDEN,
     #     detail="Imvalid Email or Password")
@@ -161,13 +161,88 @@ async def get_current_user(user = Depends(get_current_user), _: bool = Depends(r
     return user
 
     
-# @auth_router.get("/logout")
-# async def revoke_token(token_details : dict = Depends(AccessTokenBearer())):
-#     jti = token_details['jti']
+@auth_router.get("/logout")
+async def revoke_token(token_details : dict = Depends(AccessTokenBearer())):
+    jti = token_details['jti']
     
-#     await add_jti_to_blocklist(jti)
+    await add_jti_to_blocklist(jti)
     
-#     return JSONResponse(
-#         content={"message":"Logged out successfully"},
-#         status_code=status.HTTP_200_OK
-#     )
+    return JSONResponse(
+        content={"message":"Logged out successfully"},
+        status_code=status.HTTP_200_OK
+    )
+
+
+"""
+    1. Provide the email -> password reset request
+    2. send password reset link
+    3. reset password -> password reset confirm
+"""
+
+@auth_router.post("/password-reset-request")
+async def password_reset_request(email_data: PasswordRequestModel):
+    email = email_data.email
+
+    # MUST use URL SAFE TOKEN, not JWT !!!
+    token = create_url_safe_token({"email": email})
+    print("PASSWORD RESET TOKEN:", token)
+
+
+    link = f"http://{config.DOMAIN}/api/v1/auth/password-reset-confirm/{token}"
+
+    html_message = f"""
+        <h1>Reset your password</h1>
+        <p>Please click this <a href="{link}">link</a> to reset your password</p>
+    """
+
+    message = create_message(
+        recipients=[email],
+        subject="Reset your password",
+        body=html_message
+    )
+
+    await mail.send_message(message)
+
+    return {"message": "Password reset email sent"}
+
+
+@auth_router.post("/password-reset-confirm/{token}")
+async def reset_account_password(
+    token: str,
+    passwords: PasswordResetConfirmModel,
+    session: AsyncSession = Depends(get_session)
+):
+    # decode using URLSafeTimedSerializer
+    token_data = decode_url_safe_token(token)
+    print("PASSWORD RESET Account TOKEN:", token_data)
+
+
+    if not token_data:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or expired password reset token"
+        )
+
+    user_email = token_data.get("email")
+    if not user_email:
+        raise HTTPException(status_code=400, detail="Invalid token payload")
+
+    if passwords.new_password != passwords.confirm_new_password:
+        raise HTTPException(status_code=400, detail="Passwords do not match")
+
+    user = await user_service.get_user_by_email(user_email, session)
+    if not user:
+        raise UserNotFound()
+
+    password_hash = generate_passwd_hash(passwords.new_password)
+
+    await user_service.update_user(
+        user,
+        {"password_hash": password_hash},
+        session
+    )
+
+    return JSONResponse(
+        content={"message": "Password reset successfully"},
+        status_code=200
+    )

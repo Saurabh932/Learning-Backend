@@ -4,11 +4,11 @@ from fastapi.security import HTTPBearer
 from fastapi.exceptions import HTTPException
 from fastapi.security.http import HTTPAuthorizationCredentials
 from .utils import decode_token
-# from src.db.redis import token_in_blocklist
+from src.db.redis import token_in_blocklist
 from src.db.main import get_session
 from src.db.model import User
 from src.exception import InvalidToken
-from src.exception import InvalidToken, RefreshTokenRequired, AccessTokenRequired, InsufficientPermission
+from src.exception import InvalidToken, RefreshTokenRequired, AccessTokenRequired, InsufficientPermission, AccountNotVerified
 from sqlalchemy.ext.asyncio import AsyncSession
 from .service import UserService
 
@@ -33,11 +33,11 @@ class TokenBearer(HTTPBearer):
             #                             "resolution":"Please get new token"})
         
         
-        # if await token_in_blocklist(token_data['jti']):
-            # raise InvalidToken()
-        #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-        #                         detail={"error":"This token is invalid or has been revoked",
-        #                                 "resolution":"Please get new token"})
+        if await token_in_blocklist(token_data['jti']):
+            raise InvalidToken()
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail={"error":"This token is invalid or has been revoked",
+                                        "resolution":"Please get new token"})
         
         
         self.verify_token_data(token_data)
@@ -70,7 +70,7 @@ class AccessTokenBearer(TokenBearer):
 class RefreshTokenBearer(TokenBearer):
     def verify_token_data(self, token_data:dict) -> None:
         if token_data and not token_data['refresh']:
-            raise RefreshTokenRequired
+            raise RefreshTokenRequired()
             # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
             #                     detail="Please provide refresh token")
             
@@ -89,6 +89,9 @@ class RoleChecker:
         self.allowed_roles = allowed_roles
         
     def __call__(self, current_user : User = Depends(get_current_user)) -> Any:
+        if not current_user.is_verified:
+            raise AccountNotVerified()
+        
         if current_user.role in self.allowed_roles:
             return True
         
