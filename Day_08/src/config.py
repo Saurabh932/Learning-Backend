@@ -12,8 +12,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     JWT_SECRET : str
     JWT_ALGORITHM : str
-    REDIS_HOST : str = "localhost"
-    REDIS_PORT : int = 6379
+    REDIS_URL : str = "redis://localhost:6379/0"
     
     MAIL_USERNAME: str
     MAIL_PASSWORD: str
@@ -39,3 +38,7 @@ class Settings(BaseSettings):
 # Create a single config object to import and use anywhere in the app
 config = Settings()
 # print(config.DATABASE_URL)  # Uncomment to verify the env variable is being read
+
+
+broker_url = config.REDIS_URL
+result_backend = config.REDIS_URL

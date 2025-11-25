@@ -25,3 +25,7 @@
 ## Day 7 - completeded Database
 
 ## Day 8 - Started User authentication
+
+
+To run celery task:
+celery -A src.celery_task.c_app worker --pool=solo -l info

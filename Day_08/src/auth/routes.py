@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio.session import AsyncSession
 # Configuration and Database
 from src.config import config
 from src.db.main import get_session
+from src.celery_task import send_email
 from src.db.redis import add_jti_to_blocklist # Uncommented if Redis is used
 
 # Email/Messaging
@@ -24,6 +25,7 @@ from .service import UserService
 from .utils import create_access_token, decode_token, verify_passwd, create_url_safe_token, decode_url_safe_token, generate_passwd_hash
 from .dependencies import RefreshTokenBearer, AccessTokenBearer, get_current_user, RoleChecker
 
+
 auth_router = APIRouter()
 user_service = UserService()
 role_checker = RoleChecker(['admin', 'user'])
@@ -35,10 +37,10 @@ REFRESH_TOKEN_EXPIRY = 2
 async def send_mail(emails: EmailModel):
     emails = emails.addresses
     html = "<h1>Welcome to the App</h1>"
+    subject = "Welcome to out app"
     
-    message = create_message(recipients=emails, subject="Welcome", body=html)
+    send_email.delay(emails, subject, html)
     
-    await mail.send_message(message)
     return {"message":"Email sent successfully"}
     
 
@@ -56,6 +58,7 @@ async def create_user_account(user_data : UserCreation, bg_tasks: BackgroundTask
     new_user = await user_service.create_user(user_data, session)
     
     token = create_url_safe_token({"email": email})
+    print(token)
     
     link = f"http://{config.DOMAIN}/api/v1/auth/verify/{token}"
     
@@ -64,9 +67,10 @@ async def create_user_account(user_data : UserCreation, bg_tasks: BackgroundTask
                     <p>Please click this <a href="{link}">verification link</a> to verify your email</p>
                     """
                     
-    message = create_message(recipients=[email], subject="Verfiy you email", body=html_message)
+    email = [email]
+    subject = "Verify your email"
     
-    bg_tasks.add_task(mail.send_message, message)
+    send_email.delay(email, subject, html_message)
     
     return {"message":"Account created! Check email to verify your account",
             "user":new_user}
@@ -76,6 +80,7 @@ async def create_user_account(user_data : UserCreation, bg_tasks: BackgroundTask
 @auth_router.get('/verify/{token}')
 async def verfiy_user_account(token:str, session: AsyncSession = Depends(get_session)):
     token_data = decode_url_safe_token(token)
+    print(token_data)
     
     user_email = token_data.get('email')
     

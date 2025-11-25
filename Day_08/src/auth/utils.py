@@ -85,14 +85,10 @@ def decode_url_safe_token(token:str, max_age: int = 3600):
     Validate & decode token safely
     """
     try:
-        token_data = serializer.loads(token, max_age=3600)  # 1 hour expiry
+        token_data = serializer.loads(token)
+
         return token_data
-
-    except BadSignature:
-        logging.error("Invalid token signature")
-        return None
-
+    
     except Exception as e:
         logging.error(str(e))
-        return None
 
