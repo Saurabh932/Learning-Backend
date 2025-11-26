@@ -138,3 +138,29 @@ where join_date > '2021-01-01';
 -- Q6: Show the total number of customers in each city.
 select city, count(*) as total_customers from customers
 group by city;
+
+
+-- Q7: Find the total money spent by each customer.
+SELECT c.name, SUM(o.amount) AS total_spent
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id;
+
+
+-- Q8: List all employees along with their department name.
+
+select e.name as E_name, d.name as D_name from employees e
+right join departments d 
+on e.department_id = d.id;
+
+
+-- Find customers who have placed more than 1 order.
+select c.name, count(o.id) as o_count from customers c
+inner join orders o on c.id = o.customer_id
+group by c.id
+having o_count > 1;
+
+
+-- Q10: Get the products whose price is between 500 and 1500.
+select p.name from products p
+where p.price between 500 and 1500;
