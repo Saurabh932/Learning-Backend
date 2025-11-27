@@ -164,3 +164,21 @@ having o_count > 1;
 -- Q10: Get the products whose price is between 500 and 1500.
 select p.name from products p
 where p.price between 500 and 1500;
+
+
+-- Q11: Select all employees and their department names
+select e.name, d.name from employees e
+inner join departments d on e.department_id = d.id;
+
+
+-- Q12: Show all customers and the orders they have placed.
+select c.name, o.amount from customers c
+inner join orders o on c.id = o.customer_id;
+
+
+-- Q13: Show all employees, even those who do not belong to any department
+select e.name, d.name from employees e
+left join departments d on e.department_id = d.id;
+
+
+-- Q14: Show all departments and the employees who belong to them
