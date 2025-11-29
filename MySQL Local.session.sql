@@ -182,3 +182,40 @@ left join departments d on e.department_id = d.id;
 
 
 -- Q14: Show all departments and the employees who belong to them
+select d.name as department, e.name as employess from departments d
+left join employees e on d.id = e.department_id;
+
+
+-- Q15: List employee names along with the department ID they belong to
+select e.name as employee, e.department_id from employees e;
+
+
+-- Q16: Show the total number of employees in each department
+select d.name as dept, count(e.department_id) as dept_count from departments d
+inner join employees e on d.id=e.department_id
+GROUP BY d.id;
+
+
+-- Q17: Show customers who never placed any order
+select c.name from customers c
+left join orders o on c.id = o.customer_id
+where o.customer_id is NULL;
+
+
+-- Q18: Show the total order amount spent by each customer
+select c.name as Name, sum(o.amount) as Total_Amount from customers c
+right join orders o on c.id = o.customer_id
+where o.status = "Completed"
+group by c.id;
+
+
+-- Q19: Show the highest salary in each department
+select d.id as Departement, max(e.salary) as Max_Salary from departments d
+inner join  employees e on d.id = e.department_id
+group by d.id;
+
+
+-- Q20: Find employees who belong to the IT department
+select e.name from employees e
+inner join departments d on e.department_id = d.id
+where d.name = "IT";
