@@ -219,3 +219,8 @@ group by d.id;
 select e.name from employees e
 inner join departments d on e.department_id = d.id
 where d.name = "IT";
+
+
+-- Q21 Get employees whose salary is greater than the average salary of all employees.
+select e.name as Name, e.salary as Salary from employees e
+where e.salary > (select avg(e.salary) from employees e);
