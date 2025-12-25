@@ -1,12 +1,10 @@
 services:
   web:
-    image: python:3.11
+    build: .
     container_name: python-docker-testApp
     ports:
       - "3000:3000"
     volumes:
       - .:/app
-    working_dir: /app
     environment:
       ENV: development
-    command: sh -c "pip install -r requirements.txt && python app.py"
